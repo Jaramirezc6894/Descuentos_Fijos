@@ -1,0 +1,279 @@
+CREATE PROC sp_descuentos_fijos
+AS
+
+
+DROP TABLE IF EXISTS [dbo].[prove_d]
+DROP TABLE IF EXISTS [dbo].[supplier_d]
+DROP TABLE IF EXISTS [dbo].[partner_center__srm_supplier_discount_info_CONSOLIDADO]
+
+
+
+CREATE TABLE prove_d
+(
+ cod_pro INT
+ ,Publicidad FLOAT
+ ,Recibo_Centralizado FLOAT
+ ,Rebajas_Bonificaciones FLOAT
+ ,Rebate FLOAT
+ ,Otros FLOAT
+ ,impto_1 FLOAT
+)
+
+
+CREATE TABLE supplier_d
+(
+ vendorcode INT
+,name VARCHAR(MAX)
+,fixescode VARCHAR(MAX)
+,value_copy FLOAT
+)
+
+CREATE TABLE #tmp_descuentos
+(
+	vendorcode INT
+	,Publicidad FLOAT
+	 ,Recibo_Centralizado FLOAT
+	 ,Rebajas_Bonificaciones FLOAT
+	 ,Rebate FLOAT
+	 ,Otros FLOAT
+	 ,Empaques_Biodegradables FLOAT
+)
+
+CREATE TABLE partner_center__srm_supplier_discount_info_CONSOLIDADO
+(
+	vENDorcode INT,
+	Publicidad FLOAT,
+	Recibo_Centralizado FLOAT, 
+	Rebajas_Bonificaciones FLOAT, 
+	Rebate FLOAT, 
+	Otros FLOAT, 
+	Empaques_Biodegradables FLOAT
+)
+
+
+BULK INSERT prove_d
+FROM 'C:\Users\gonzaleza\Desktop\prove1.txt'
+WITH(
+		FIRSTROW = 2,
+		FIELDTERMINATOR = '	'
+	)
+	
+BULK INSERT prove_d
+FROM 'C:\Users\gonzaleza\Desktop\prove2.txt'
+WITH(
+		FIRSTROW = 2,
+		FIELDTERMINATOR = '	'
+	)
+	
+
+BULK INSERT supplier_d
+FROM 'C:\Users\gonzaleza\Desktop\supplier1.txt'
+WITH(
+		FIRSTROW = 2,
+		FIELDTERMINATOR = '	'
+	)
+
+
+BULK INSERT supplier_d
+FROM 'C:\Users\gonzaleza\Desktop\supplier2.txt'
+WITH(
+		FIRSTROW = 2,
+		FIELDTERMINATOR = '	'
+	)
+
+
+
+
+INSERT INTO #tmp_descuentos
+SELECT * FROM   
+(
+    SELECT 
+        s.vendorcode
+        ,CASE
+			WHEN s.fixescode = 'advertising'
+			THEN 'Publicidad'
+
+			WHEN s.fixescode = 'centralizedReceipt'
+			THEN 'Recibo_Centralizado'
+
+			WHEN s.fixescode = 'saleOrBonuses'
+			THEN 'Rebajas_Bonificaciones'
+
+			WHEN s.fixescode = 'rebate'
+			THEN 'Rebate'
+
+			WHEN s.fixescode = 'others'
+			THEN 'Otros'
+
+			WHEN s.fixescode = 'discountConcept'
+			THEN 'Empaques_Biodegradables'
+		END Descripcion
+		,s.value_copy
+    FROM supplier_d s
+) descuento_fijo 
+PIVOT(
+	MAX(value_copy) 
+    FOR Descripcion IN (
+        [Publicidad], 
+        [Recibo_Centralizado], 
+        [Rebajas_Bonificaciones], 
+        [Rebate], 
+        [Otros], 
+        [Empaques_Biodegradables]
+		)
+) AS DESCUENTOS_FIJOS
+ORDER BY vendorcode;
+
+
+
+
+INSERT INTO partner_center__srm_supplier_discount_info_CONSOLIDADO
+SELECT
+		vendorcode,
+		ISNULL([Publicidad],0) AS Publicidad, 
+        ISNULL([Recibo_Centralizado],0) AS Recibo_Centralizado, 
+        ISNULL([Rebajas_Bonificaciones],0) AS Rebajas_Bonificaciones, 
+        ISNULL([Rebate],0) AS Rebate, 
+        ISNULL([Otros],0) AS Otros, 
+        ISNULL([Empaques_Biodegradables],0) AS Empaques_Biodegradables
+FROM #tmp_descuentos
+ORDER BY vENDorcode
+
+DROP TABLE IF EXISTS [dbo].[#tmp_descuentos]
+
+
+
+
+select 
+	count(*)Publicidad 
+from(
+	select 
+		cod_pro
+		,Publicidad
+	from prove_d
+	where Publicidad != 0
+)Publicidad---4783
+
+
+
+select 
+	count(*)Recibo_Centralizado
+from(
+	select 
+		cod_pro
+		,Recibo_Centralizado
+	from prove_d
+	where Recibo_Centralizado != 0
+)Recibo_Centralizado--5432
+
+
+select 
+	count(*)Rebajas_Bonificaciones
+from(
+	select 
+		cod_pro
+		,Rebajas_Bonificaciones
+	from prove_d
+	where Rebajas_Bonificaciones != 0
+)Rebajas_Bonificaciones--1015
+
+select 
+	count(*)Rebate
+from(
+	select 
+		cod_pro
+		,Rebate
+	from prove_d
+	where Rebate != 0
+)Rebate--59
+
+
+select 
+	count(*)Otros
+from(
+	select 
+		cod_pro
+		,Otros
+	from prove_d
+	where Otros != 0
+)Otros--151
+
+
+select 
+	count(*)Empaques_Biodegradables
+from(
+	select 
+		cod_pro
+		,Empaques_Biodegrabables
+	from prove_d
+	where Empaques_Biodegrabables != 0
+)Empaques_Biodegradables--112
+
+
+
+
+
+select 
+	count(*)Publicidad 
+from(
+	select 
+		vendorcode
+		,Publicidad
+	from partner_center__srm_supplier_discount_info_CONSOLIDADO
+	where Publicidad != 0
+)Publicidad--4783
+
+
+
+select 
+	count(*)Recibo_Centralizado
+from(
+	select 
+		vendorcode
+		,Recibo_Centralizado
+	from partner_center__srm_supplier_discount_info_CONSOLIDADO
+	where Recibo_Centralizado != 0
+)Recibo_Centralizado--5433
+
+
+select 
+	count(*)Rebajas_Bonificaciones
+from(
+	select 
+		vendorcode
+		,Rebajas_Bonificaciones
+	from partner_center__srm_supplier_discount_info_CONSOLIDADO
+	where Rebajas_Bonificaciones != 0
+)Rebajas_Bonificaciones--1015
+
+select 
+	count(*)Rebate
+from(
+	select 
+		vendorcode
+		,Rebate
+	from partner_center__srm_supplier_discount_info_CONSOLIDADO
+	where Rebate != 0
+)Rebate--113
+
+
+select 
+	count(*)Otros
+from(
+	select 
+		vendorcode
+		,Otros
+	from partner_center__srm_supplier_discount_info_CONSOLIDADO
+	where Otros != 0
+)Otros--151
+
+
+select 
+	count(*)Empaques_Biodegradables
+from(
+	select 
+		vendorcode
+		,Empaques_Biodegrabables
+	from partner_center__srm_supplier_discount_info_CONSOLIDADO
+	where Empaques_Biodegrabables != 0
+)Empaques_Biodegradables--59
