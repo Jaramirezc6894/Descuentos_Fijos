@@ -52,14 +52,14 @@ CREATE TABLE partner_center__srm_supplier_discount_info_CONSOLIDADO
 
 
 BULK INSERT prove_d
-FROM 'C:\Users\gonzaleza\Desktop\prove1.txt'
+FROM 'C:\Users\ramirezcja\Desktop\prove1.txt'
 WITH(
 		FIRSTROW = 2,
 		FIELDTERMINATOR = '	'
 	)
 	
 BULK INSERT prove_d
-FROM 'C:\Users\gonzaleza\Desktop\prove2.txt'
+FROM 'C:\Users\ramirezcja\Desktop\prove2.txt'
 WITH(
 		FIRSTROW = 2,
 		FIELDTERMINATOR = '	'
@@ -67,7 +67,7 @@ WITH(
 	
 
 BULK INSERT supplier_d
-FROM 'C:\Users\gonzaleza\Desktop\supplier1.txt'
+FROM 'C:\Users\ramirezcja\Desktop\supplier1.txt'
 WITH(
 		FIRSTROW = 2,
 		FIELDTERMINATOR = '	'
@@ -75,7 +75,7 @@ WITH(
 
 
 BULK INSERT supplier_d
-FROM 'C:\Users\gonzaleza\Desktop\supplier2.txt'
+FROM 'C:\Users\ramirezcja\Desktop\supplier2.txt'
 WITH(
 		FIRSTROW = 2,
 		FIELDTERMINATOR = '	'
