@@ -99,13 +99,13 @@ SELECT * FROM
 			WHEN s.fixescode = 'saleOrBonuses'
 			THEN 'Rebajas_Bonificaciones'
 
-			WHEN s.fixescode = 'rebate'
+			WHEN s.fixescode = 'discountConcept'
 			THEN 'Rebate'
 
 			WHEN s.fixescode = 'others'
 			THEN 'Otros'
 
-			WHEN s.fixescode = 'discountConcept'
+			WHEN s.fixescode = 'rebate'
 			THEN 'Empaques_Biodegradables'
 		END Descripcion
 		,s.value_copy
